@@ -51,7 +51,8 @@ export class App extends React.Component {
         {id: 1, name:"Player B"}
       ],
       currentPlayer: 0,
-      table
+      table,
+      winner: null
     }
   }
 
@@ -64,6 +65,18 @@ export class App extends React.Component {
       table[y][x].table[y2][x2].owner = stateLocal.currentPlayer
       let allSquare = false //If sending to a large square that has already been won the next player can plan in any square
       
+      // Checks if as a result of the last placement the current mini table has been won
+      table[y][x].owner = checkRow(table[y][x].table)
+
+      let winner = checkRow(table)
+      if (winner != null) {
+        return {
+          table,
+          winner,
+          currentPlayer: stateLocal.currentPlayer === 0 ? 1 : 0 // Switch the current player to the other player
+        } // return
+      } // If winner not null
+
       // Checks if the cell the player is sending the next player too is already won?
       if (table[y2][x2].owner !== null) allSquare = true // If so the player then can place in whichever mini table they like
       
@@ -97,8 +110,6 @@ export class App extends React.Component {
         
       } // for i as row Index
 
-      // Checks if as a result of the last placement the current mini table has been won
-      table[y][x].owner = checkRow(table[y][x].table)
 
       // Return the changes to state as a result of a placement
       return {
@@ -127,11 +138,30 @@ export class App extends React.Component {
     //Return the actual HTML for the app
     return (
       <div>
+
+        {this.state.winner !== null ? (
+          <h2>
+            <span className="currentPlayerText">{this.state.players[this.state.currentPlayer].name} Has Won !!!</span>
+          </h2>
+        ) : null}
+        {/* Put a large nort or cross over the entire table if the table is won */}
+        {this.state.winner !== null ? (
+          this.state.winner === 0 ? 
+            <div className="iconContainer">
+              <FontAwesomeIcon icon={faCircle} className="iconFullLarge" />
+            </div> :
+            <div className="iconContainer">
+              <FontAwesomeIcon icon={faTimes} className="iconFullLarge" />
+            </div>
+        ) : (
+
         <h2> {/* Show whose Turn it currently is at the top of the play area */}
           {this.state.currentPlayer === 0 ? this.nort : (this.state.currentPlayer === 1 ? this.cross : null)} 
           <span className="currentPlayerText">It is {this.state.players[this.state.currentPlayer].name}{"'s"} turn</span>
           {this.state.currentPlayer === 0 ? this.nort : (this.state.currentPlayer === 1 ? this.cross : null)}
         </h2> 
+        )}
+
         {/* Create the table that the game is played in */}
         <table>
           <tbody>

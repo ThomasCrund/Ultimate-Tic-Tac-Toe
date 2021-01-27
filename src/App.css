@@ -64,6 +64,12 @@ td.innerCell div {
   height: 169px;
 }
 
+.iconFullLarge {
+  font-size: 45px;
+  width: 560px !important;
+  height: 560px;
+}
+
 .iconContainer {
   position: absolute;
 }
